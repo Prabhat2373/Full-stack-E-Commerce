@@ -4,23 +4,43 @@ import Sections from '../Sections';
 import { useToast } from '@/features/Toast/ToastContext';
 import { Modal } from 'flowbite';
 import { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import WomenImg from '../../Assets/images/women-1.jpg'
 import Image from 'next/image';
-
+import { User } from '@/features/Slices/AppSlice';
+import { Products } from '@/features/Slices/ProductSlice';
+import { useGetProductsQuery, useGetCurrentUserQuery, useGetAllCartQuery } from '@/features/services/RTK/Api';
+import { Cart } from '@/features/Slices/CartSlice';
 const Hero = () => {
-    const [isOpen, setIsOpen] = useState(false);
+    const user = useSelector((state: any) => state.user.user);
+
+    const dispatch = useDispatch();
+    const { data: ProductPayload } = useGetProductsQuery('');
+    const { data: currentUser } = useGetCurrentUserQuery('');
+    const { data: CartItems } = useGetAllCartQuery(currentUser?.user?._id)
+    React.useEffect(() => {
+        dispatch(Products(ProductPayload?.products ?? []));
+        if (user?.isLoggedIn) {
+            dispatch(User(currentUser?.user));
+        }
+        dispatch(Cart(CartItems?.payload))
+    }, [currentUser, ProductPayload, CartItems]);
+    // dispatch(User(currentUser?.user));
+    console.log('cart items', CartItems)
+    console.log('user', currentUser)
+
+    // const [isOpen, setIsOpen] = useState(false);
     const item = useSelector((state: any) => state.products.products);
-    const ClothsItems = item?.filter(
-        (el: any, index: number) => el?.category === 'fashion'
-    );
-    const ElectronicsItems = item?.filter(
-        (el: any, index: number) => el?.category === 'electronics'
-    );
-    const OthersItems = item?.filter(
-        (el: any, index: number) =>
-            el?.category !== 'fashion' && el?.category !== 'electronics'
-    );
+    // const ClothsItems = item?.filter(
+    //     (el: any, index: number) => el?.category === 'fashion'
+    // );
+    // const ElectronicsItems = item?.filter(
+    //     (el: any, index: number) => el?.category === 'electronics'
+    // );
+    // const OthersItems = item?.filter(
+    //     (el: any, index: number) =>
+    //         el?.category !== 'fashion' && el?.category !== 'electronics'
+    // );
     const toast = useToast();
     const navigate = useRouter();
     const showToast = (message: any) => toast.open(`${message}`);
@@ -163,9 +183,9 @@ const Hero = () => {
                     </div>
                 </div>
             </div>
-            <Sections title="Fashion & Cloths" data={ClothsItems} />
+            {/* <Sections title="Fashion & Cloths" data={ClothsItems} />
             <Sections title="Tech and Electronics" data={ElectronicsItems} />
-            <Sections title="Others" data={OthersItems} />
+            <Sections title="Others" data={OthersItems} /> */}
         </div>
     )
 }

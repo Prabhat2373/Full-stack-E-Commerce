@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-
+import './../styles/Home.module.css'
 const index = () => {
-  
+
   return (
     <div>
-      <Hero/>
+      <Hero />
     </div>
   )
 }

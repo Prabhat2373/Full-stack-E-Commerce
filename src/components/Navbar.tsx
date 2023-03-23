@@ -1,35 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import DropDownMenu from './DropDownMenu';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Cart from './Cart';
+// import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useGetAllCartQuery } from '../features/services/RTK/Api';
 import SearchBar from './SearchBar';
 import { useSelector } from 'react-redux';
 import { StarIcon } from '@heroicons/react/24/outline';
 import { Product } from '../Types/Products';
 import { GetRatings } from '../Helper/Helper';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import { Cart } from './Cart';
+import Image from 'next/image';
+import { trpc } from '../../ApiConfig/trpc';
 
 const Navbar = () => {
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const [searchRes, setSearchRes] = useState<Product[]>();
   const [isOpen, setIsOpen] = useState(false);
-  const User = useSelector((state: any) => state?.user?.payload);
+  // const User = useSelector((state: any) => state?.user?.payload);
   const [searchOpen, setSearchOpen] = useState(false);
   const [NavOpen, setNavOpen] = useState(false);
 
-  const { data: CartItems } = useGetAllCartQuery(User?._id);
+  // const { data: CartItems } = useGetAllCartQuery(User?._id);
   const [CartData, setCartData] = useState<any>([]);
   const [Path, setPath] = useState('');
-  const link = useLocation()?.pathname;
-  const Products = useSelector((state: any) => state.products.products);
-  console.log('productssss', Products);
-  useEffect(() => {
-    setCartData(CartItems);
-    setPath(link);
-    setSearchRes(Products);
-  }, [CartItems, Products, link]);
+  // const { data, isLoading } = trpc.hello.useQuery({
+  //   text: 'string'
+  // })
+  const { data, mutate } = trpc.user.login.useMutation()
 
+
+  console.log('TRPC DATA', data?.user);
+  // console.log('iSLOADING', isLoading)
+  // const link = useRouter()?.pathname;
+  // const Products = useSelector((state: any) => state.products.products);
+  // console.log('productssss', Products);
+  // useEffect(() => {
+  //   setCartData(CartItems);
+  //   setPath(link);
+  //   setSearchRes(Products);
+  // }, [CartItems, Products, link]);
+  useEffect(() => {
+    const mutLogin = mutate({
+      email: 'random@email.com',
+      password: '123456778'
+    })
+    console.log('MUT LOGIN', mutLogin)
+  }, [])
   return (
     <>
       <nav className="bg-white shadow-md fixed top-0 w-full z-10">
@@ -38,7 +56,7 @@ const Navbar = () => {
             <div>
               <Link
                 className="text-gray-800 text-xl font-bold md:text-2xl hover:text-gray-700"
-                to="/"
+                href="/"
               >
                 W-SHOP
               </Link>
@@ -64,25 +82,22 @@ const Navbar = () => {
 
           {
             <div
-              className={`${
-                NavOpen ? 'flex' : 'hidden'
-              } flex-col md:flex-row items-start gap-2 md:gap-0 md:flex md:items-center`}
+              className={`${NavOpen ? 'flex' : 'hidden'
+                } flex-col md:flex-row items-start gap-2 md:gap-0 md:flex md:items-center`}
               id="navItems"
             >
               <div className="flex flex-col md:flex-row md:mx-6 text-left md:text-end ">
                 <Link
-                  className={`my-1 text-sm ${
-                    Path === '/' ? 'text-indigo-500' : 'text-gray-700'
-                  } font-medium hover:text-indigo-500 md:mx-4 md:my-0`}
-                  to="/"
+                  className={`my-1 text-sm ${Path === '/' ? 'text-indigo-500' : 'text-gray-700'
+                    } font-medium hover:text-indigo-500 md:mx-4 md:my-0`}
+                  href="/"
                 >
                   Home
                 </Link>
                 <Link
-                  className={`my-1 text-sm ${
-                    Path === '/products' ? 'text-indigo-500' : 'text-gray-700'
-                  } font-medium hover:text-indigo-500 md:mx-4 md:my-0`}
-                  to="/products"
+                  className={`my-1 text-sm ${Path === '/products' ? 'text-indigo-500' : 'text-gray-700'
+                    } font-medium hover:text-indigo-500 md:mx-4 md:my-0`}
+                  href="/products"
                 >
                   Products
                 </Link>
@@ -111,14 +126,14 @@ const Navbar = () => {
                               className="swiper-child bg-[#D9D9D9] m-3 "
                               key={element?._id + 1}
                             >
-                              <img
+                              <Image
                                 src={element?.images[0]?.url}
                                 alt={'Loading Product Imag'}
                                 className="cursor-pointer"
-                                width={'400px'}
-                                height={'400px'}
+                                width={400}
+                                height={400}
                                 onClick={() => {
-                                  navigate(`/view/${element?._id}`);
+                                  navigate.push(`/view/${element?._id}`);
                                 }}
                               />
                               <div className="flex justify-between p-2">
@@ -190,9 +205,9 @@ const Navbar = () => {
               <div className="flex flex-col md:flex-row md:mx-6 cursor-pointer">
                 {/* <SearchBar/> */}
               </div>
-              <div>
+              {/* <div>
                 <DropDownMenu user={User} />
-              </div>
+              </div> */}
             </div>
           }
         </div>

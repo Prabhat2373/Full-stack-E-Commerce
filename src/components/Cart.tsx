@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, FC } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import {
@@ -7,34 +7,35 @@ import {
 } from '../features/services/RTK/Api';
 import { useDispatch, useSelector } from 'react-redux';
 import { Product } from '../Types/Products';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 interface Props {
   isOpen: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-export default function Cart({ isOpen, setOpen }: Props) {
+export const Cart: FC<Props> = ({ isOpen, setOpen }) => {
   const [productId, setProductId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const User = useSelector((state: any) => state.user.payload);
-  const navigate = useNavigate();
-  const [removeItem] = useRemoveCartItemMutation();
-  const { data: CartItems, refetch: FetchMore } = useGetAllCartQuery(User?._id);
+  const User: any = {};
+  const navigate = useRouter();
+  // const [removeItem] = useRemoveCartItemMutation();
+  // const { data: CartItems, refetch: FetchMore } = useGetAllCartQuery(User?._id);
+  const CartItems: any[] = []
   const [CartData, setCartData] = useState<Product[]>([]);
   useEffect(() => {
-    setCartData(CartItems?.payload);
-    FetchMore();
-  }, [CartItems]);
+    setCartData(CartItems);
+    // FetchMore();
+  }, []);
 
 
-  function remove(id: number) {
-    setIsLoading(true);
-    removeItem(id).then(() => {
-      FetchMore();
+  // function remove(id: number) {
+  //   setIsLoading(true);
+  //   removeItem(id).then(() => {
+  //     FetchMore();
 
-      setIsLoading(false);
-    });
-  }
+  //     setIsLoading(false);
+  //   });
+  // }
 
   console.log('cart data', CartData);
   const SubTotal = CartData?.reduce((item: any, price: any) => {
@@ -139,7 +140,7 @@ export default function Cart({ isOpen, setOpen }: Props) {
                                               className="font-medium text-indigo-600 hover:text-indigo-500"
                                               id={products?._id}
                                               onClick={(e) => {
-                                                remove(products?._id);
+                                                // remove(products?._id);
                                                 setProductId(
                                                   e?.currentTarget?.id
                                                 );
@@ -179,7 +180,7 @@ export default function Cart({ isOpen, setOpen }: Props) {
                               value="Checkout"
                               defaultValue={'Checkout'}
                               disabled={!SubTotal || SubTotal === undefined}
-                              onClick={() => navigate('/order-form')}
+                              onClick={() => navigate.push('/order-form')}
                             />
                           </div>
                           <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
