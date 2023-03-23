@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { procedure, router } from '../trpc';
+import { procedure, router, userProcedure } from '../trpc';
+import { Register } from '../procedures/userProcedure';
 
 export const authRouter = router({
   login: procedure
@@ -28,7 +29,5 @@ export const authRouter = router({
         },
       };
     }),
+  register: Register,
 });
-
-// export type definition of API
-

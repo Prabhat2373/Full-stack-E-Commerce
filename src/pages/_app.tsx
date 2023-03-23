@@ -1,4 +1,5 @@
 import '../styles/global.css'
+import type { ReactNode } from 'react'
 import type { AppType } from 'next/app';
 import { trpc } from '../../ApiConfig/trpc';
 import { Provider, useDispatch, useSelector } from 'react-redux'
@@ -6,6 +7,12 @@ import { store } from '../store';
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+
+const App = ({ children }: {
+  children: ReactNode,
+})=>{
+  
+}
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
